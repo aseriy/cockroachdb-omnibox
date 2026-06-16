@@ -1,0 +1,81 @@
+services:
+
+    haproxy:
+      image: localhost:5000/haproxy_crdb
+      build:
+        context: .
+        dockerfile: Dockerfile.haproxy
+      command:
+        - '{"primary": {"region": "omnibox", "nodes": ["0", "1", "2"]},  "backup": []}'
+      ports:
+        - "18081:8080"
+        - "16258:26257"
+      deploy:
+        restart_policy:
+          delay: 10s
+        placement:
+          constraints:
+            - node.labels.region == centcomm
+
+
+    roach-omnibox-0:
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/omnibox:/cockroach/certs
+        - /mnt/volumes/omnibox/roach-0/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-omnibox-0:26258 --advertise-sql-addr=tasks.roach-omnibox-0:26257 --join=tasks.roach-omnibox-0:26258,tasks.roach-omnibox-1:26258,tasks.roach-omnibox-2:26258 --store=/data
+      deploy:
+        resources:
+          reservations:
+            cpus: '2'
+            memory: 4G
+          limits:
+            cpus: '4'
+            memory: 8G
+
+
+    roach-omnibox-1:
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/omnibox:/cockroach/certs
+        - /mnt/volumes/omnibox/roach-1/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-omnibox-1:26258 --advertise-sql-addr=tasks.roach-omnibox-1:26257 --join=tasks.roach-omnibox-0:26258,tasks.roach-omnibox-1:26258,tasks.roach-omnibox-2:26258 --store=/data
+      deploy:
+        resources:
+          reservations:
+            cpus: '2'
+            memory: 4G
+          limits:
+            cpus: '4'
+            memory: 8G
+
+
+    roach-omnibox-2:
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/omnibox:/cockroach/certs
+        - /mnt/volumes/omnibox/roach-2/data:/data
+      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-omnibox-2:26258 --advertise-sql-addr=tasks.roach-omnibox-2:26257 --join=tasks.roach-omnibox-0:26258,tasks.roach-omnibox-1:26258,tasks.roach-omnibox-2:26258 --store=/data
+      deploy:
+        resources:
+          reservations:
+            cpus: '2'
+            memory: 4G
+          limits:
+            cpus: '4'
+            memory: 8G
+
+
+    roachinit:
+      image: cockroachdb/cockroach
+      volumes:
+        - /mnt/volumes/certs/omnibox:/cockroach/certs
+      command: init --certs-dir=/cockroach/certs --host roach-omnibox-0:26258
+      deploy:
+        restart_policy:
+          delay: 10s
+          max_attempts: 6
+        placement:
+          constraints:
+            - node.labels.region == centcomm
+

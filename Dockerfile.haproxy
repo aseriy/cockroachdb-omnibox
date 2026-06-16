@@ -1,0 +1,11 @@
+FROM haproxy:2.3
+
+RUN apt update \
+ && apt install -y net-tools procps curl wget iproute2 iputils-ping jq
+
+COPY haproxy-run.bash /usr/local/bin/haproxy-run.bash
+
+RUN chmod +x /usr/local/bin/haproxy-run.bash \
+ && mkdir -p /run/haproxy && chmod 660 /run/haproxy
+
+ENTRYPOINT ["/usr/local/bin/haproxy-run.bash"]
