@@ -17,10 +17,15 @@ RUN pip install \
     psycopg-binary \
     psycopg
 
+
+RUN mkdir -p /app
+RUN mkdir -p /app/logs
+COPY DatapointLogger.py /app/
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-WORKDIR /cockroach/
+# WORKDIR /cockroach/
 ENV COCKROACH_CHANNEL=official-docker
 EXPOSE 26257 8080
 
