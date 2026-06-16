@@ -1,2 +1,4 @@
+.venv/
 volumes
 volumes/
+__pycache__/

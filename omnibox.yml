@@ -20,6 +20,8 @@ services:
 
     roach-omnibox-0:
       image: cockroachdb/cockroach
+      environment:
+        - NODE_NAME={{.Service.Name}}
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
         - /mnt/volumes/omnibox/roach-0/data:/data
@@ -36,6 +38,8 @@ services:
 
     roach-omnibox-1:
       image: cockroachdb/cockroach
+      environment:
+        - NODE_NAME={{.Service.Name}}
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
         - /mnt/volumes/omnibox/roach-1/data:/data
@@ -52,6 +56,8 @@ services:
 
     roach-omnibox-2:
       image: cockroachdb/cockroach
+      environment:
+        - NODE_NAME={{.Service.Name}}
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
         - /mnt/volumes/omnibox/roach-2/data:/data
