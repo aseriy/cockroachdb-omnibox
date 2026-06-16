@@ -162,8 +162,53 @@ class Datapointlogger:
     # This process continues until dbworkload exits.
     def loop(self):
         return [
-                self.sql_insert_datapoint
+                self.sql_insert_datapoint,
+                self.watch_my_neighbors,
+                self.snooze
             ]
+
+
+    def snooze(self, conn: psycopg.Connection):
+        time.sleep(min(random.expovariate(0.5), 5))
+
+
+
+    def watch_my_neighbors(self, conn: psycopg.Connection):
+        if random.random() > 0.05:
+            return
+
+        with conn.cursor() as cur:
+            # Discover active neighbors in the past 5 minutes
+            sql = """
+                SELECT DISTINCT device FROM datapoints
+                WHERE device != %s
+                AND at >= NOW() - INTERVAL '5 minutes'
+            """
+            cur.execute(sql, (self.device,))
+            
+            neighbors = [row[0] for row in cur.fetchall()]
+            if not neighbors:
+                return
+
+            # Pick one neighbor at random
+            neighbor = random.choice(neighbors)
+
+            # Pick a random param column
+            param = f"param{random.randint(0, 4)}"
+
+            # Fetch the neighbor's last datapoint
+            sql = f"""
+                SELECT device, at, {param} FROM datapoints
+                WHERE device = %s
+                ORDER BY at DESC LIMIT 1
+            """
+            cur.execute(sql, (neighbor,))
+
+            row = cur.fetchone()
+            if row:
+                print(f"Device {self.device}: My neighbor {row[0]} last logged a datapoint at {row[1]} with {param} = {row[2]}")
+
+
 
 
     def sql_insert_datapoint(self, conn: psycopg.Connection):

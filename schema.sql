@@ -10,3 +10,4 @@ CREATE TABLE IF NOT EXISTS datapoints (
     CONSTRAINT datapoints_pkey PRIMARY KEY (device ASC, at ASC) USING HASH WITH (bucket_count=16),
     INDEX datapoints_at_idx (at ASC)
 );
+
