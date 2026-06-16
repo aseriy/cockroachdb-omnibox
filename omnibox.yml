@@ -19,13 +19,16 @@ services:
 
 
     roach-omnibox-0:
-      image: cockroachdb/cockroach
+      image: localhost:5000/omnibox
+      build:
+        context: .
+        dockerfile: Dockerfile.omnibox
       environment:
-        - NODE_NAME={{.Service.Name}}
+        - SELF=roach-omnibox-0
+        - NEIGHBORS=roach-omnibox-1 roach-omnibox-2
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
         - /mnt/volumes/omnibox/roach-0/data:/data
-      command: start --certs-dir=/cockroach/certs --listen-addr=:26258 --sql-addr=:26257 --http-addr=:8080 --advertise-addr=tasks.roach-omnibox-0:26258 --advertise-sql-addr=tasks.roach-omnibox-0:26257 --join=tasks.roach-omnibox-0:26258,tasks.roach-omnibox-1:26258,tasks.roach-omnibox-2:26258 --store=/data
       deploy:
         resources:
           reservations:
@@ -37,9 +40,13 @@ services:
 
 
     roach-omnibox-1:
-      image: cockroachdb/cockroach
+      image: localhost:5000/omnibox
+      build:
+        context: .
+        dockerfile: Dockerfile.omnibox
       environment:
-        - NODE_NAME={{.Service.Name}}
+        - SELF=roach-omnibox-1
+        - NEIGHBORS=roach-omnibox-0 roach-omnibox-2
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
         - /mnt/volumes/omnibox/roach-1/data:/data
@@ -55,9 +62,13 @@ services:
 
 
     roach-omnibox-2:
-      image: cockroachdb/cockroach
+      image: localhost:5000/omnibox
+      build:
+        context: .
+        dockerfile: Dockerfile.omnibox
       environment:
-        - NODE_NAME={{.Service.Name}}
+        - SELF=roach-omnibox-2
+        - NEIGHBORS=roach-omnibox-0 roach-omnibox-1
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
         - /mnt/volumes/omnibox/roach-2/data:/data

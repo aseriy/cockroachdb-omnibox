@@ -1,2 +1,27 @@
-FROM cockroachdb/cockroach
+FROM cockroachdb/cockroach AS crdb
 
+FROM python:3.12-slim
+
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /cockroach /licenses /usr/local/lib/cockroach
+
+COPY --from=crdb /cockroach/* /cockroach/
+COPY --from=crdb /licenses/* /licenses/
+COPY --from=crdb /usr/local/lib/cockroach/* /usr/local/lib/cockroach/
+
+RUN pip install \
+    "dbworkload[postgresql]" \
+    psycopg-binary \
+    psycopg
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+WORKDIR /cockroach/
+ENV COCKROACH_CHANNEL=official-docker
+EXPOSE 26257 8080
+
+ENTRYPOINT ["/entrypoint.sh"]
