@@ -7,9 +7,10 @@ from datetime import datetime, timedelta
 import string
 import json
 import os
+import datagen
 
 
-class Datapointlogger:
+class Embeddedapp:
 
     def __init__(self, args):
         self.device = os.environ.get("NODE_NAME")
@@ -131,15 +132,6 @@ class Datapointlogger:
                                     ))
         }
 
-        datapoint_text = "/".join([
-            str(datapoint["param0"]),
-            str(datapoint["param1"]),
-            str(datapoint["param2"]),
-            str(datapoint["param3"]),
-            str(datapoint["param4"]),
-            str(datapoint["param5"])
-        ])
-
         return datapoint
 
 
@@ -164,12 +156,70 @@ class Datapointlogger:
         return [
                 self.sql_insert_datapoint,
                 self.watch_my_neighbors,
+                self.random_message,
+                self.read_my_messages,
                 self.snooze
             ]
 
 
+
     def snooze(self, conn: psycopg.Connection):
-        time.sleep(min(random.expovariate(0.5), 5))
+        sleep_time = min(random.expovariate(0.5), 5)
+        time.sleep(sleep_time)
+
+
+    def random_message(self, conn: psycopg.Connection):
+        if random.random() > 0.1:
+            return
+
+        message = random.choice([
+            datagen.chuck_norris_joke,
+            datagen.random_quote,
+            datagen.ticker_quote,
+            datagen.weather
+        ])()
+
+        with conn.transaction():
+            with conn.cursor() as cur:
+                sql = """
+                    SELECT DISTINCT device FROM datapoints
+                    WHERE device != %s
+                """
+
+                cur.execute(sql, (self.device,))
+                
+                neighbors = [row[0] for row in cur.fetchall()]
+                if neighbors:
+                    device_to = random.choice(neighbors)
+                    sql = """
+                        INSERT INTO message_board (device_from, device_to, message)
+                        VALUES (%s, %s, %s)
+                    """
+
+                    cur.execute(sql, (self.device, device_to, message))
+                    print(f"Device {self.device}: Sent a message to {device_to}: {message}")
+
+
+
+
+    def read_my_messages(self, conn: psycopg.Connection):
+        if random.random() > 0.1:
+            return
+        
+        with conn.cursor() as cur:
+            sql = """
+                UPDATE message_board
+                SET read_at = NOW()
+                WHERE device_to = %s
+                AND read_at IS NULL
+                RETURNING device_from, received_at, message
+            """
+            cur.execute(sql, (self.device,))
+
+            for device_from, received_at, message in cur.fetchall():
+                print(f"Device {self.device}: Message from {device_from} received at {received_at}: {message}")
+
+
 
 
 
@@ -177,36 +227,36 @@ class Datapointlogger:
         if random.random() > 0.05:
             return
 
-        with conn.cursor() as cur:
-            # Discover active neighbors in the past 5 minutes
-            sql = """
-                SELECT DISTINCT device FROM datapoints
-                WHERE device != %s
-                AND at >= NOW() - INTERVAL '5 minutes'
-            """
-            cur.execute(sql, (self.device,))
-            
-            neighbors = [row[0] for row in cur.fetchall()]
-            if not neighbors:
-                return
+        with conn.transaction():
+            with conn.cursor() as cur:
+                # Discover active neighbors in the past 5 minutes
+                sql = """
+                    SELECT DISTINCT device FROM datapoints
+                    WHERE device != %s
+                    AND at >= NOW() - INTERVAL '5 minutes'
+                """
+                cur.execute(sql, (self.device,))
+                
+                neighbors = [row[0] for row in cur.fetchall()]
+                if neighbors:
+                    # Pick one neighbor at random
+                    neighbor = random.choice(neighbors)
 
-            # Pick one neighbor at random
-            neighbor = random.choice(neighbors)
+                    # Pick a random param column
+                    param = f"param{random.randint(0, 4)}"
 
-            # Pick a random param column
-            param = f"param{random.randint(0, 4)}"
+                    # Fetch the neighbor's last datapoint
+                    sql = f"""
+                        SELECT device, at, {param} FROM datapoints
+                        WHERE device = %s
+                        ORDER BY at DESC LIMIT 1
+                    """
+                    cur.execute(sql, (neighbor,))
 
-            # Fetch the neighbor's last datapoint
-            sql = f"""
-                SELECT device, at, {param} FROM datapoints
-                WHERE device = %s
-                ORDER BY at DESC LIMIT 1
-            """
-            cur.execute(sql, (neighbor,))
+                    row = cur.fetchone()
+                    if row:
+                        print(f"Device {self.device}: My neighbor {row[0]} last logged a datapoint at {row[1]} with {param} = {row[2]}")
 
-            row = cur.fetchone()
-            if row:
-                print(f"Device {self.device}: My neighbor {row[0]} last logged a datapoint at {row[1]} with {param} = {row[2]}")
 
 
 

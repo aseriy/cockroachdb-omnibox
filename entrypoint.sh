@@ -25,7 +25,7 @@ APP_LOG_DIR=/app/logs/${SELF}
 mkdir -p ${APP_LOG_DIR}
 APP_LOG_FILE=${APP_LOG_DIR}/$(date +%Y%m%d_%H%M%S).log
 PYTHONUNBUFFERED=1 NODE_NAME=${SELF} dbworkload run \
-    -w /app/DatapointLogger.py \
+    -w /app/EmbeddedApp.py \
     --uri "postgresql://${SQLUSER}@localhost:26257/omnibox?sslmode=verify-ca&sslrootcert=/cockroach/certs/ca.crt" \
     -q \
     -k 300 \

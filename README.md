@@ -9,6 +9,7 @@ CREATE USER omnibox0;
 CREATE USER omnibox1;
 CREATE USER omnibox1;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE datapoints TO omnibox0, omnibox1, omnibox2;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE message_board TO omnibox0, omnibox1, omnibox2;
 ```
 
 ```sql

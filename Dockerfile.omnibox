@@ -15,12 +15,15 @@ COPY --from=crdb /usr/local/lib/cockroach/* /usr/local/lib/cockroach/
 RUN pip install \
     "dbworkload[postgresql]" \
     psycopg-binary \
-    psycopg
+    psycopg \
+    requests \
+    yfinance
 
 
 RUN mkdir -p /app
 RUN mkdir -p /app/logs
-COPY DatapointLogger.py /app/
+COPY EmbeddedApp.py /app/
+COPY datagen/ /app/datagen/
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
