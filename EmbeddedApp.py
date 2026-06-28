@@ -282,4 +282,5 @@ class Embeddedapp:
                     datapoint["param4"], datapoint['param5']
                 )
             )
+            print(f"Device {self.device}: Logged a datapoint: {datapoint['param5']}"[:125] + "...")
 
