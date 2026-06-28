@@ -194,10 +194,12 @@ class Embeddedapp:
                     sql = """
                         INSERT INTO message_board (device_from, device_to, message)
                         VALUES (%s, %s, %s)
+                        RETURNING received_at
                     """
 
                     cur.execute(sql, (self.device, device_to, message))
-                    print(f"Device {self.device}: Sent a message to {device_to}: {message}")
+                    received_at = cur.fetchone()[0]
+                    print(f"Sent to {device_to} at {received_at}: {message}")
 
 
 
@@ -217,7 +219,7 @@ class Embeddedapp:
             cur.execute(sql, (self.device,))
 
             for device_from, received_at, message in cur.fetchall():
-                print(f"Device {self.device}: Message from {device_from} received at {received_at}: {message}")
+                print(f"Received from {device_from} at {received_at}: {message}")
 
 
 
@@ -255,7 +257,7 @@ class Embeddedapp:
 
                     row = cur.fetchone()
                     if row:
-                        print(f"Device {self.device}: My neighbor {row[0]} last logged a datapoint at {row[1]} with {param} = {row[2]}")
+                        print(f"Neighbor {row[0]} last logged datapoint at {row[1]} with {param} = {row[2]}")
 
 
 
@@ -273,7 +275,9 @@ class Embeddedapp:
                         param0, param1, param2, param3, param4, param5
                     )
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING at
             """
+
             # print(sql)
             cur.execute(sql, (
                     datapoint["device"], datapoint['date'],
@@ -282,5 +286,6 @@ class Embeddedapp:
                     datapoint["param4"], datapoint['param5']
                 )
             )
-            print(f"Device {self.device}: Logged a datapoint: {datapoint['param5']}"[:125] + "...")
+            at = cur.fetchone()[0]
+            print(f"Logged datapoint at {at}: {datapoint['param5']}"[:123] + "  ...")
 
