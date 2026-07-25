@@ -72,7 +72,7 @@ services:
         dockerfile: Dockerfile.omnibox
       environment:
         - SELF=roach-omnibox-2
-        - NEIGHBORS=roach-omnibox-0 roach-omnibox-2
+        - NEIGHBORS=roach-omnibox-0 roach-omnibox-1
         - SQLUSER=omnibox2
       volumes:
         - /mnt/volumes/certs/omnibox:/cockroach/certs
