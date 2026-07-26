@@ -23,14 +23,16 @@ done
 # Start embedded app in the background
 APP_LOG_DIR=/app/logs/${SELF}
 mkdir -p ${APP_LOG_DIR}
-APP_LOG_FILE=${APP_LOG_DIR}/$(date +%Y%m%d_%H%M%S).log
+APP_LOG_FILE=${APP_LOG_DIR}/embeddedapp.log
+DBWL_LOG_FILE=${APP_LOG_DIR}/$(date +%Y%m%d_%H%M%S).log
 PYTHONUNBUFFERED=1 NODE_NAME=${SELF} dbworkload run \
     -w /app/EmbeddedApp.py \
     --uri "postgresql://${SQLUSER}@localhost:26257/omnibox?sslmode=verify-ca&sslrootcert=/cockroach/certs/ca.crt" \
+    --args "{\"log_file\": \"${APP_LOG_FILE}\"}" \
     -q \
     -k 300 \
     -c 1 \
-    > ${APP_LOG_FILE} &
+    > ${DBWL_LOG_FILE} &
 
 # Wait for ANY background process to exit or fail
 wait -n
