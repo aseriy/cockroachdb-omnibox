@@ -14,7 +14,7 @@ import datagen
 
 LOG_MAX_BYTES = 10 * 1024 * 1024
 LOG_BACKUP_COUNT = 5
-LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
+LOG_FORMAT = "%(asctime)s %(levelname)s [%(event)s] %(message)s"
 
 _logger = logging.getLogger(__name__)
 
@@ -164,9 +164,10 @@ class Embeddedapp:
     def setup(self, conn: psycopg.Connection, id: int, total_thread_count: int):
         with conn.cursor() as cur:
             _logger.info(
-                f"My thread ID is {id}. The total count of threads is {total_thread_count}"
+                f"My thread ID is {id}. The total count of threads is {total_thread_count}",
+                extra = {"event": "SETUP"}
             )
-            _logger.info(cur.execute(f"select version()").fetchone()[0])
+            _logger.info(cur.execute(f"select version()").fetchone()[0], extra={"event": "SETUP"})
 
 
 
@@ -221,7 +222,7 @@ class Embeddedapp:
 
                     cur.execute(sql, (self.device, device_to, message))
                     received_at = cur.fetchone()[0]
-                    _logger.info(f"Sent to {device_to} at {received_at}: {message}")
+                    _logger.info(f"Sent to {device_to} at {received_at}: {message}", extra={"event": "SEND"})
 
 
 
@@ -241,7 +242,7 @@ class Embeddedapp:
             cur.execute(sql, (self.device,))
 
             for device_from, received_at, message in cur.fetchall():
-                _logger.info(f"Received from {device_from} at {received_at}: {message}")
+                _logger.info(f"Received from {device_from} at {received_at}: {message}", extra={"event": "RECEIVE"})
 
 
 
@@ -279,7 +280,10 @@ class Embeddedapp:
 
                     row = cur.fetchone()
                     if row:
-                        _logger.info(f"Neighbor {row[0]} last logged datapoint at {row[1]} with {param} = {row[2]}")
+                        _logger.info(
+                            f"Neighbor {row[0]} last logged datapoint at {row[1]} with {param} = {row[2]}",
+                            extra = {"event": "SNOOP"}
+                        )
 
 
 
@@ -309,5 +313,8 @@ class Embeddedapp:
                 )
             )
             at = cur.fetchone()[0]
-            _logger.info(f"Logged datapoint at {at}: {datapoint['param5']}"[:123] + "  ...")
+            _logger.info(
+                f"Logged datapoint at {at}: {datapoint['param5']}"[:123] + "  ...",
+                extra = {"event": "DATAPOINT"}
+            )
 
