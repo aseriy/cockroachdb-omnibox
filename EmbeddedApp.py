@@ -222,7 +222,10 @@ class Embeddedapp:
 
                     cur.execute(sql, (self.device, device_to, message))
                     received_at = cur.fetchone()[0]
-                    _logger.info(f"Sent to {device_to} at {received_at}: {message}", extra={"event": "SEND"})
+                    _logger.info(
+                        f"To {device_to} at {received_at}: {message}",
+                        extra={"event": "SEND"}
+                    )
 
 
 
@@ -242,7 +245,10 @@ class Embeddedapp:
             cur.execute(sql, (self.device,))
 
             for device_from, received_at, message in cur.fetchall():
-                _logger.info(f"Received from {device_from} at {received_at}: {message}", extra={"event": "RECEIVE"})
+                _logger.info(
+                    f"From {device_from} at {received_at}: {message}",
+                    extra={"event": "RECEIVE"}
+                )
 
 
 
@@ -281,7 +287,7 @@ class Embeddedapp:
                     row = cur.fetchone()
                     if row:
                         _logger.info(
-                            f"Neighbor {row[0]} last logged datapoint at {row[1]} with {param} = {row[2]}",
+                            f"{row[0]} loogged at {row[1]} with {param} = {row[2]}",
                             extra = {"event": "SNOOP"}
                         )
 
@@ -314,7 +320,7 @@ class Embeddedapp:
             )
             at = cur.fetchone()[0]
             _logger.info(
-                f"Logged datapoint at {at}: {datapoint['param5']}"[:123] + "  ...",
+                f"Logged at {at}: " + json.dumps(datapoint)[:120] + "  ...",
                 extra = {"event": "DATAPOINT"}
             )
 
