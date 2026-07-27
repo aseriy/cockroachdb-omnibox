@@ -319,6 +319,7 @@ class Embeddedapp:
                 )
             )
             at = cur.fetchone()[0]
+            del datapoint["interval"]
             del datapoint["device"]
             del datapoint['date']
             _logger.info(
