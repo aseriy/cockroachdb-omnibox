@@ -319,6 +319,8 @@ class Embeddedapp:
                 )
             )
             at = cur.fetchone()[0]
+            del datapoint["device"]
+            del datapoint['date']
             _logger.info(
                 f"Logged at {at}: " + json.dumps(datapoint)[:120] + "  ...",
                 extra = {"event": "DATAPOINT"}
