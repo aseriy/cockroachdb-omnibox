@@ -1,0 +1,21 @@
+# Configuration for omnibox-visualize.
+#
+# Lanes are listed explicitly rather than discovered. Each omnibox log directory
+# also holds a dbworkload capture named after its start time, so a wildcard
+# would pull that in alongside the application log.
+
+listen: localhost:8080
+
+# Lines kept per lane, in the backend ring and in the browser alike.
+buffer_size: 2000
+
+# "light" or "dark". Message colours are derived in the UI, not listed here.
+scheme: dark
+
+lanes:
+  - name: roach-omnibox-0
+    path: /mnt/volumes/omnibox/applogs/roach-omnibox-0/embeddedapp.log
+  - name: roach-omnibox-1
+    path: /mnt/volumes/omnibox/applogs/roach-omnibox-1/embeddedapp.log
+  - name: roach-omnibox-2
+    path: /mnt/volumes/omnibox/applogs/roach-omnibox-2/embeddedapp.log
