@@ -12,11 +12,20 @@ type Lane struct {
 	Path string `yaml:"path" json:"path"`
 }
 
+type Scheme struct {
+	Active       bool              `yaml:"active" json:"active"`
+	DefaultColor string            `yaml:"default_color" json:"default_color"`
+	Messages     map[string]string `yaml:"messages" json:"messages"`
+}
+
 type Config struct {
-	Listen     string `yaml:"listen" json:"listen"`
-	BufferSize int    `yaml:"buffer_size" json:"buffer_size"`
-	Scheme     string `yaml:"scheme" json:"scheme"`
-	Lanes      []Lane `yaml:"lanes" json:"lanes"`
+	Listen      string            `yaml:"listen" json:"listen"`
+	BufferSize  int               `yaml:"buffer_size" json:"buffer_size"`
+	Mode        string            `yaml:"mode" json:"mode"`
+	Orientation string            `yaml:"orientation" json:"orientation"`
+	Resolution  string            `yaml:"resolution" json:"resolution"`
+	Schemes     map[string]Scheme `yaml:"schemes" json:"schemes"`
+	Lanes       []Lane            `yaml:"lanes" json:"lanes"`
 }
 
 func Load(path string) (*Config, error) {
