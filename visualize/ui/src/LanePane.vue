@@ -89,8 +89,9 @@ function size() {
 }
 
 onMounted(() => {
-  lineHeight.value = probe.value.offsetHeight
-  charWidth.value = probe.value.offsetWidth
+  const rect = probe.value.getBoundingClientRect()
+  lineHeight.value = rect.height
+  charWidth.value = rect.width / 10
   size()
   observer = new ResizeObserver(size)
   observer.observe(view.value)
@@ -130,7 +131,7 @@ onBeforeUnmount(() => {
   <section class="pane">
     <header>{{ lane }}</header>
     <div ref="view" class="view" @wheel.prevent="onWheel">
-      <span ref="probe" class="probe">X</span>
+      <span ref="probe" class="probe">XXXXXXXXXX</span>
       <div class="content" :style="{ marginTop: `${-paint.offset * lineHeight}px` }">
         <div v-for="r in paint.items" :key="r.seq" class="line" :style="indent"><span :style="{ color: color(r.type) }">{{ r.type.padEnd(typeWidth + 1) }}</span>{{ r.msg }}</div>
       </div>
@@ -166,7 +167,7 @@ header {
 }
 
 .line {
-  white-space: pre-wrap;
+  white-space: break-spaces;
   word-break: break-all;
 }
 </style>

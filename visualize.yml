@@ -44,9 +44,9 @@ schemes:
       RECEIVE: royalblue
 
 lanes:
-  - name: roach-omnibox-0
+  - name: omnibox-0
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-0/embeddedapp.log
-  - name: roach-omnibox-1
+  - name: omnibox-1
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-1/embeddedapp.log
-  - name: roach-omnibox-2
+  - name: omnibox-2
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-2/embeddedapp.log
