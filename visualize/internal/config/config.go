@@ -14,6 +14,8 @@ type Lane struct {
 
 type Scheme struct {
 	Active       bool              `yaml:"active" json:"active"`
+	Background   string            `yaml:"background" json:"background"`
+	Foreground   string            `yaml:"foreground" json:"foreground"`
 	DefaultColor string            `yaml:"default_color" json:"default_color"`
 	Messages     map[string]string `yaml:"messages" json:"messages"`
 }

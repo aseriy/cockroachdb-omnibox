@@ -20,18 +20,23 @@ orientation: columns
 resolution: 1s
 
 # Colour themes. The scheme with "active: true" is the initial theme; the UI
-# toggle switches at runtime. Within a scheme, messages maps a message type to
-# the colour of its type token, and default_color covers types not listed.
+# toggle switches at runtime. Within a scheme, background fills the panes,
+# foreground is the message text colour, messages maps a message type to the
+# colour of its type token, and default_color covers types not listed.
 # CSS colour values.
 schemes:
   dark:
     active: true
+    background: black
+    foreground: gainsboro
     default_color: silver
     messages:
       DATAPOINT: teal
       SEND: orange
       RECEIVE: dodgerblue
   light:
+    background: white
+    foreground: black
     default_color: dimgray
     messages:
       DATAPOINT: teal
