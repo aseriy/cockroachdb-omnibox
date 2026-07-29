@@ -23,6 +23,11 @@ const visible = computed(() =>
   records.value.slice(Math.max(0, records.value.length - viewportRows.value))
 )
 
+const indent = computed(() => ({
+  paddingLeft: `${typeWidth.value + 1}ch`,
+  textIndent: `-${typeWidth.value + 1}ch`,
+}))
+
 function color(type) {
   return props.scheme.messages[type] ?? props.scheme.default_color
 }
@@ -67,7 +72,7 @@ onBeforeUnmount(() => {
     <header>{{ lane }}</header>
     <div ref="view" class="view">
       <span ref="probe" class="probe">X</span>
-      <div v-for="r in visible" :key="r.seq" class="line" :style="{ height: lineHeight + 'px' }"><span :style="{ color: color(r.type) }">{{ r.type.padEnd(typeWidth + 1) }}</span>{{ r.msg }}</div>
+      <div v-for="r in visible" :key="r.seq" class="line" :style="indent"><span :style="{ color: color(r.type) }">{{ r.type.padEnd(typeWidth + 1) }}</span>{{ r.msg }}</div>
     </div>
   </section>
 </template>
@@ -91,6 +96,9 @@ header {
   overflow: hidden;
   padding: 0 8px;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .probe {
@@ -100,7 +108,8 @@ header {
 }
 
 .line {
-  white-space: pre;
-  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-all;
+  flex-shrink: 0;
 }
 </style>
