@@ -6,10 +6,37 @@
 listen: localhost:8080
 
 # Lines kept per lane, in the backend ring and in the browser alike.
+# Practical range is up to a few tens of thousands: larger values slow stream
+# startup and make the UI sluggish. Not enforced in code.
 buffer_size: 2000
 
-# "light" or "dark". Message colours are derived in the UI, not listed here.
-scheme: dark
+# Initial display mode: "independent" or "timeline".
+mode: independent
+
+# Pane layout in independent mode: "columns" or "rows".
+orientation: columns
+
+# Timeline mode buckets records to this interval (Go duration string).
+resolution: 1s
+
+# Colour themes. The scheme with "active: true" is the initial theme; the UI
+# toggle switches at runtime. Within a scheme, messages maps a message type to
+# the colour of its type token, and default_color covers types not listed.
+# CSS colour values.
+schemes:
+  dark:
+    active: true
+    default_color: silver
+    messages:
+      DATAPOINT: teal
+      SEND: orange
+      RECEIVE: dodgerblue
+  light:
+    default_color: dimgray
+    messages:
+      DATAPOINT: teal
+      SEND: chocolate
+      RECEIVE: royalblue
 
 lanes:
   - name: roach-omnibox-0
@@ -18,12 +45,3 @@ lanes:
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-1/embeddedapp.log
   - name: roach-omnibox-2
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-2/embeddedapp.log
-
-
-messages:
-  - DATAPOINT: color1
-  - SEND: color2
-  - RECEIVE: color3
-
-
-
