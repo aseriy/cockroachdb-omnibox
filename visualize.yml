@@ -18,3 +18,12 @@ lanes:
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-1/embeddedapp.log
   - name: roach-omnibox-2
     path: /mnt/volumes/omnibox/applogs/roach-omnibox-2/embeddedapp.log
+
+
+messages:
+  - DATAPOINT: color1
+  - SEND: color2
+  - RECEIVE: color3
+
+
+
