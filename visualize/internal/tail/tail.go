@@ -1,4 +1,4 @@
-// Package tail follows an EmbeddedApp.py log file and yields its records.
+// Package tail follows a log file and yields its records.
 package tail
 
 import (
@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-// EmbeddedApp.py:17 writes "%(asctime)s %(levelname)s [%(event)s] %(message)s",
-// so a record splits positionally into date, time, level, bracketed event and
-// message. The message carries its own timestamps and JSON, so it is never
-// scanned for a delimiter.
+// A record is "date time LEVEL [EVENT] message" (a Python logging asctime
+// timestamp, comma milliseconds), so it splits positionally into date, time,
+// level, bracketed event and message. The message carries its own timestamps
+// and JSON, so it is never scanned for a delimiter.
 const (
 	fields = 5
 	layout = "2006-01-02 15:04:05.000"
