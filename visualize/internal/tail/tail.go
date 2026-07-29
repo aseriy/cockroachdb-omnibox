@@ -74,7 +74,11 @@ func follow(ctx context.Context, f *os.File, path string, fn func(Line) error) e
 			}
 			record := pending.String()
 			pending.Reset()
-			if err := fn(split(record)); err != nil {
+			line, ok := split(record)
+			if !ok {
+				continue
+			}
+			if err := fn(line); err != nil {
 				return err
 			}
 		}
@@ -145,22 +149,25 @@ func rewind(f *os.File, n int) error {
 	return err
 }
 
-// split parses one record. Anything that does not match LOG_FORMAT comes back
-// whole in Msg.
-func split(raw string) Line {
+// split parses one record. Lines that do not match the record shape, and
+// records whose level is not INFO, are dropped.
+func split(raw string) (Line, bool) {
 	text := strings.TrimRight(raw, "\r\n")
 	part := strings.SplitN(text, " ", fields)
 	if len(part) < fields-1 {
-		return Line{Msg: text}
+		return Line{}, false
+	}
+	if part[2] != "INFO" {
+		return Line{}, false
 	}
 
 	event := part[3]
 	if len(event) < 2 || event[0] != '[' || event[len(event)-1] != ']' {
-		return Line{Msg: text}
+		return Line{}, false
 	}
 	at, err := time.Parse(layout, part[0]+" "+strings.Replace(part[1], ",", ".", 1))
 	if err != nil {
-		return Line{Msg: text}
+		return Line{}, false
 	}
 
 	var msg string
@@ -173,5 +180,5 @@ func split(raw string) Line {
 		Level: part[2],
 		Type:  event[1 : len(event)-1],
 		Msg:   msg,
-	}
+	}, true
 }
