@@ -1,8 +1,10 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 
@@ -11,6 +13,9 @@ import (
 )
 
 const configFile = "visualize.yml"
+
+//go:embed all:ui/dist
+var ui embed.FS
 
 func main() {
 	cfg, err := config.Load(configFile)
@@ -33,6 +38,11 @@ func main() {
 	mux.HandleFunc("GET /api/stream/{lane}", func(w http.ResponseWriter, r *http.Request) {
 		stream(w, r, path, cfg.BufferSize)
 	})
+	dist, err := fs.Sub(ui, "ui/dist")
+	if err != nil {
+		log.Fatal(err)
+	}
+	mux.Handle("GET /", http.FileServerFS(dist))
 
 	log.Printf("listening on %s", cfg.Listen)
 	log.Fatal(http.ListenAndServe(cfg.Listen, mux))

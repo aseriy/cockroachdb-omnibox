@@ -6,4 +6,6 @@ __pycache__/
 
 
 visualize/omnibox-visualize
+visualize/ui/node_modules/
+visualize/ui/dist/
 

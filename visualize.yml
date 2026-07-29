@@ -3,7 +3,7 @@
 # Lanes are listed explicitly rather than discovered. A log directory can hold
 # other files, so a wildcard would pull those in alongside the application log.
 
-listen: localhost:8080
+listen: 0.0.0.0:8080
 
 # Lines kept per lane, in the backend ring and in the browser alike.
 # Practical range is up to a few tens of thousands: larger values slow stream
