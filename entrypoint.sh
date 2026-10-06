@@ -31,7 +31,7 @@ PYTHONUNBUFFERED=1 NODE_NAME=${SELF} dbworkload run \
     --args "{\"log_file\": \"${APP_LOG_FILE}\"}" \
     -q \
     -k 300 \
-    -c 1 \
+    -c 5 \
     > ${DBWL_LOG_FILE} &
 
 # Wait for ANY background process to exit or fail
